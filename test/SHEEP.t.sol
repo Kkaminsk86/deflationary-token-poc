@@ -105,8 +105,8 @@ contract ContractTest is Test {
         uint256 amountToSwap
     ) internal {
         address[] memory path = new address[](2);
-        path[0] = address(from);
-        path[1] = address(to);
+        path[0] = from;
+        path[1] = to;
         Router.swapExactTokensForTokensSupportingFeeOnTransferTokens(
             amountToSwap,
             0,
